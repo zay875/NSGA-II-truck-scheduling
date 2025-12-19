@@ -38,7 +38,7 @@ class NSGA2Utils:
         i = 0
         while len(population.fronts[i]) > 0:
             temp = []
-            for individual in population.fronts[i]:
+            for individual in population.fronts[i]: 
                 for other_individual in individual.dominated_solutions:
                     other_individual.domination_count -= 1
                     if other_individual.domination_count == 0:
@@ -89,6 +89,7 @@ class NSGA2Utils:
         return children
 
     def __crossover(self, individual1, individual2):
+        #simulated binary crossover
         child1 = self.problem.generate_individual()
         child2 = self.problem.generate_individual()
         num_of_features = len(child1.features)
@@ -102,25 +103,28 @@ class NSGA2Utils:
         return child1, child2
 
     def __get_beta(self):
+        #spread factor
         u = random.random()
         if u <= 0.5:
             return (2 * u) ** (1 / (self.crossover_param + 1))
         return (2 * (1 - u)) ** (-1 / (self.crossover_param + 1))
 
     def __mutate(self, child):
+        #polynomial mutation
         num_of_features = len(child.features)
         for gene in range(num_of_features):
             u, delta = self.__get_delta()
             if u < 0.5:
                 child.features[gene] += delta * (child.features[gene] - self.problem.variables_range[gene][0])
             else:
-                child.features[gene] += delta * (self.problem.variables_range[gene][1] - child.features[gene])
+                child.features[gene] += delta * (self.problem.variables_range[gene][1] - child.features[gene]) 
             if child.features[gene] < self.problem.variables_range[gene][0]:
                 child.features[gene] = self.problem.variables_range[gene][0]
             elif child.features[gene] > self.problem.variables_range[gene][1]:
                 child.features[gene] = self.problem.variables_range[gene][1]
 
     def __get_delta(self):
+        # mutation magnitude
         u = random.random()
         if u < 0.5:
             return u, (2 * u) ** (1 / (self.mutation_param + 1)) - 1
